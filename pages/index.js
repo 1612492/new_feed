@@ -5,7 +5,7 @@ import { getPosts, getGroups } from './api/posts';
 
 export default function HomePage({ groups }) {
   return (
-    <div className="container mx-auto py-8">
+    <div className="container px-4 md:mx-auto md:px-0 py-8">
       {groups.map(({ posts, pubDate }, groupIndex) => (
         <div key={groupIndex} className="border-l">
           <div className="relative -left-1 pb-4 pt-8">

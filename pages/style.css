@@ -9,3 +9,7 @@ pre {
 p {
   @apply mb-4;
 }
+
+iframe {
+  @apply w-full;
+}

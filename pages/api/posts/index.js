@@ -43,7 +43,7 @@ export async function getGroups(posts) {
         posts: groups[pubDate],
       };
     })
-    .sort((firstEl, secondEl) => secondEl.pubDate - firstEl.pubDate);
+    .sort((firstEl, secondEl) => new Date(secondEl.pubDate) - new Date(firstEl.pubDate));
 
   return groups;
 }

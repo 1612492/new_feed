@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+pre {
+  @apply bg-gray-800 text-gray-300 border rounded-md p-4 my-4;
+}
+
+p {
+  @apply mb-4;
+}

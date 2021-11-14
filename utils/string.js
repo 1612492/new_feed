@@ -9,3 +9,8 @@ export function truncate(target, maxLength) {
 export function merge(...args) {
   return args.join(' ');
 }
+
+export function getPathname(link) {
+  const parts = link.split('/').filter(Boolean);
+  return parts[parts.length - 1];
+}

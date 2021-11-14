@@ -1,6 +1,7 @@
 import Parser from 'rss-parser';
 import Link from 'next/link';
 import { merge } from '../utils/string';
+import { getPosts, getGroups } from './api/posts';
 
 export default function HomePage({ groups }) {
   return (
@@ -18,7 +19,7 @@ export default function HomePage({ groups }) {
               return (
                 <div key={postIndex} className={merge(postIndex !== 0 && 'border-t', 'p-4')}>
                   <h2 className="text-xl font-bold hover:text-blue-600 hover:underline">
-                    <Link href="/">
+                    <Link href={post.pathname}>
                       <a>{post.title}</a>
                     </Link>
                   </h2>
@@ -33,65 +34,9 @@ export default function HomePage({ groups }) {
   );
 }
 
-export async function getServerSideProps() {
-  const origin = [
-    { src: 'Github Blog', url: 'https://github.blog/feed', parserOptions: {} },
-    {
-      src: 'Smashing Magazine',
-      url: 'https://www.smashingmagazine.com/feed/',
-      parserOptions: {},
-    },
-    { src: 'Overreacted', url: 'https://overreacted.io/rss.xml', parserOptions: {} },
-    {
-      src: 'web.dev',
-      url: 'https://web.dev/feed.xml',
-      parserOptions: {
-        customFields: {
-          item: [['content', 'content:encoded']],
-        },
-      },
-    },
-  ];
-
-  const sources = await Promise.all(
-    origin.map(async ({ src, url, parserOptions }) => {
-      const parser = new Parser(parserOptions);
-      const { items, ...rest } = await parser.parseURL(url);
-
-      return {
-        ...rest,
-        items: items.map((item) => ({
-          ...item,
-          src,
-          pubDate: new Date(item.pubDate).toISOString().split('T')[0],
-        })),
-      };
-    })
-  );
-
-  let posts = [];
-
-  sources.forEach(({ items }) => {
-    posts = [...posts, ...items];
-  });
-
-  let groups = posts.reduce((groups, post) => {
-    const { pubDate } = post;
-    if (!groups[pubDate]) {
-      groups[pubDate] = [];
-    }
-    groups[pubDate].push(post);
-    return groups;
-  }, {});
-
-  groups = Object.keys(groups)
-    .map((pubDate) => {
-      return {
-        pubDate,
-        posts: groups[pubDate],
-      };
-    })
-    .sort((firstEl, secondEl) => secondEl.pubDate - firstEl.pubDate);
+export async function getStaticProps() {
+  const posts = await getPosts();
+  const groups = await getGroups(posts);
 
   return { props: { posts, groups } };
 }
